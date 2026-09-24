@@ -1,10 +1,10 @@
 """Tool: get_tasks_by_priority.
 
 Назначение:
-    Возвращает задачи с указанным приоритетом.
+    Возвращает задачи с указанным приоритетом и статусом.
     Использовать, когда пользователь спрашивает о задачах по приоритету.
 
-Вход (input_data):
+Вход:
     priority: str  — обязателен, одно из 'high', 'medium', 'low'.
     status:   str  — необязателен, одно из 'todo', 'in_progress', 'done',
                      по умолчанию 'todo'.
@@ -12,12 +12,14 @@
 
 Выход:
     JSON-строка.
-    Успех: {"status": "ok", "count": 0, "items": []}
+    Успех: {"status": "ok", "count": N, "items": [...]}
     Ошибка: {"status": "error", "message": "..."}
 """
 
 import json
 from typing import Any
+
+from crewai.tools import tool
 
 VALID_PRIORITIES = ("high", "medium", "low")
 VALID_STATUSES = ("todo", "in_progress", "done")
@@ -39,64 +41,60 @@ _TASKS: list[dict[str, Any]] = [
 
 
 def _fail(message: str) -> str:
-    """Формирует JSON-строку с ошибкой."""
+    """Единый формат ошибки, который вернётся агенту."""
     return json.dumps({"status": "error", "message": message}, ensure_ascii=False)
 
 
-def _ok(items: list[dict[str, Any]]) -> str:
-    """Формирует JSON-строку с успешным результатом."""
+@tool("get_tasks_by_priority")
+def get_tasks_by_priority(priority: str, status: str = DEFAULT_STATUS, limit: int = DEFAULT_LIMIT) -> str:
+    """Возвращает задачи с указанным приоритетом и статусом.
+
+    Используй этот инструмент, когда пользователь спрашивает о своих задачах
+    по приоритету — например, «покажи задачи с высоким приоритетом».
+
+    Args:
+        priority: приоритет задачи. Одно из: 'high', 'medium', 'low'. Обязателен.
+        status: статус задачи. Одно из: 'todo', 'in_progress', 'done'.
+                По умолчанию 'todo'.
+        limit: максимальное число задач в ответе. Целое число от 1 до 50.
+               По умолчанию 10.
+
+    Returns:
+        JSON-строка. При успехе: {"status": "ok", "count": N, "items": [...]}.
+        При ошибке: {"status": "error", "message": "..."}.
+    """
+    # --- валидация priority ---
+    if priority not in VALID_PRIORITIES:
+        return _fail(
+            f"priority должен быть 'high', 'medium' или 'low', получено '{priority}'"
+        )
+
+    # --- валидация status ---
+    if status not in VALID_STATUSES:
+        return _fail(
+            f"status должен быть 'todo', 'in_progress' или 'done', получено '{status}'"
+        )
+
+    # --- валидация limit ---
+    if not isinstance(limit, int) or isinstance(limit, bool):
+        return _fail(f"limit должен быть целым числом, получено '{limit}'")
+    if limit < MIN_LIMIT or limit > MAX_LIMIT:
+        return _fail(
+            f"limit должен быть в диапазоне {MIN_LIMIT}..{MAX_LIMIT}, получено {limit}"
+        )
+
+    # --- выборка из хранилища ---
+    try:
+        tasks = list(_TASKS)
+    except Exception as exc:  # noqa: BLE001 — граница системы, наружу ничего не летит
+        return _fail(f"ошибка хранилища: {exc}")
+
+    filtered = [
+        t for t in tasks
+        if t.get("priority") == priority and t.get("status") == status
+    ]
+    sliced = filtered[:limit]
     return json.dumps(
-        {"status": "ok", "count": len(items), "items": items},
+        {"status": "ok", "count": len(sliced), "items": sliced},
         ensure_ascii=False,
     )
-
-
-def _fetch_tasks() -> list[dict[str, Any]]:
-    """Читает задачи из хранилища. Может бросить исключение."""
-    return list(_TASKS)
-
-
-def run(input_data: dict[str, Any]) -> str:
-    """Основная точка входа Tool."""
-    try:
-        priority = input_data.get("priority")
-        status = input_data.get("status", DEFAULT_STATUS)
-        limit = input_data.get("limit", DEFAULT_LIMIT)
-
-        # --- валидация priority ---
-        if priority is None:
-            return _fail("priority обязателен")
-        if priority not in VALID_PRIORITIES:
-            return _fail(
-                f"priority должен быть 'high', 'medium' или 'low', получено '{priority}'"
-            )
-
-        # --- валидация status ---
-        if status not in VALID_STATUSES:
-            return _fail(
-                f"status должен быть 'todo', 'in_progress' или 'done', получено '{status}'"
-            )
-
-        # --- валидация limit ---
-        if not isinstance(limit, int) or isinstance(limit, bool):
-            return _fail(f"limit должен быть целым числом, получено '{limit}'")
-        if limit < MIN_LIMIT or limit > MAX_LIMIT:
-            return _fail(
-                f"limit должен быть в диапазоне {MIN_LIMIT}..{MAX_LIMIT}, получено {limit}"
-            )
-
-        # --- выборка ---
-        try:
-            tasks = _fetch_tasks()
-        except Exception as exc:  # noqa: BLE001
-            return _fail(f"ошибка хранилища: {exc}")
-
-        filtered = [
-            t for t in tasks
-            if t.get("priority") == priority and t.get("status") == status
-        ]
-        return _ok(filtered[:limit])
-
-    except Exception as exc:  # noqa: BLE001
-        # Страховка: наружу не должно уходить никаких traceback.
-        return _fail(f"внутренняя ошибка: {exc}")
