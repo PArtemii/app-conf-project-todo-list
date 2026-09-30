@@ -43,6 +43,7 @@ wheels/
 # Logs
 *.log
 logs/
+!ai/traces/*.log
 
 # OS
 .DS_Store
