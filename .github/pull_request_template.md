@@ -48,6 +48,7 @@ curl.exe http://localhost:8000/health
 - [ ] Приложение запускается локально, `GET /health` отвечает `200`
 - [ ] Если менялось поведение API — обновлён `README.md`
 - [ ] Если решение архитектурное — создан или обновлён ADR в `docs/adr/`
+- [ ] После изменения зависимостей выполнен `poetry export --only main -f requirements.txt --output requirements.txt`, экспорт включён в PR.
 
 ## Чек-лист ревьюера
 
