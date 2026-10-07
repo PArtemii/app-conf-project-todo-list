@@ -25,6 +25,7 @@ async def root():
 @app.get("/health")
 def health_check():
     """Приложение работает и база данных отвечает на запрос."""
+    """Проверка готовности API через запрос SELECT 1 к PostgreSQL."""
     database_url = os.environ.get("DATABASE_URL")
 
     if not database_url:
