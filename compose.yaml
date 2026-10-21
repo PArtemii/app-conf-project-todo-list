@@ -1,9 +1,12 @@
+
 services:
   app:
     build: .
     ports:
       - "8000:8000"
     environment:
+      APP_ENV: ${APP_ENV:-dev}
+      DB_CONNECT_TIMEOUT: ${DB_CONNECT_TIMEOUT:-3}
       DATABASE_URL: >-
         postgresql://${POSTGRES_USER:?set POSTGRES_USER in .env}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:?set POSTGRES_DB in .env}
     depends_on:
