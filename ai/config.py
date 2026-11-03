@@ -1,7 +1,7 @@
 from typing import Literal
-
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
 
 
 class AISettings(BaseSettings):
@@ -20,6 +20,11 @@ class AISettings(BaseSettings):
     qwen_base_url: str = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
     qwen_api_key: SecretStr | None = None
     llm_temperature: float = 0.1
+    ai_repo_root: str | Path = "../app-conf-project-todo-list"
+    ai_deny_globs: str = ".env*,*.pem,*.key,.git,secrets"
+    ai_exclude_dirs: str = ".git,.venv,venv,node_modules,__pycache__,dist,build"
+    ai_tool_timeout_s: int = 30
+
 
 
 settings = AISettings()
