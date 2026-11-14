@@ -36,6 +36,7 @@ import ast
 import contextlib
 import fnmatch
 import json
+import re
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -55,8 +56,9 @@ EMBED_BATCH = 16  # чанков в одном запросе к Ollama: на CP
 # TODO по вашей схеме (раздел 2): размер чанка и перекрытие в символах.
 # Предел входа модели: embeddinggemma — 2048 токенов (около 7000 символов русского
 # Markdown), qwen3-embedding:0.6b в Ollama — 4096. Длиннее — build остановится с ошибкой.
-CHUNK_SIZE = 1500
-CHUNK_OVERLAP = 0
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 50
+
 HEADERS = [("#", "h1"), ("##", "h2"), ("###", "h3")]
 
 
@@ -137,14 +139,13 @@ def collect_files(s: AISettings, assistant_root: Path = ASSISTANT_ROOT) -> list[
 
 
 def has_secret(text: str) -> bool:
-    """Похоже ли содержимое чанка на секрет. Чанк с секретом в индекс не идёт.
-
-    TODO по вашей схеме (раздел 1, «Проверяем содержимое перед индексацией»):
-    deny-list по именам не поймает пароль, вписанный в README или в документ
-    с примерами. Например: строка вида PASSWORD=<не пусто и не changeme>,
-    «-----BEGIN», ключи вида sk-... Решили не проверять — оставьте False и
-    запишите почему в ADR 003. На каждое правило — тест.
-    """
+    """Похоже ли содержимое чанка на секрет. Чанк с секретом в индекс не идёт."""
+    if "-----BEGIN" in text:
+        return True
+    for match in re.finditer(r"(?i)\b[A-Z0-9_]*?(?:PASSWORD|SECRET)[ \t]*=[ \t]*([^\s#]+)", text):
+        val = match.group(1).strip("\"'")
+        if val and val.lower() != "changeme" and not val.startswith(("${", "<")):
+            return True
     return False
 
 
@@ -187,7 +188,8 @@ def split_markdown(text: str) -> list[dict]:
         if not body.strip():
             continue
         heading = " > ".join(doc.metadata[key] for _, key in HEADERS if key in doc.metadata)
-        if len(body) <= CHUNK_SIZE:
+        has_table = any(line.lstrip().startswith("|") for line in body.splitlines())
+        if len(body) <= 800 or (has_table and len(body) <= 3500):
             parts = [(0, body)]
         else:
             parts = [(p.metadata["start_index"], p.page_content) for p in long_splitter.create_documents([body])]
@@ -238,9 +240,15 @@ def make_chunks(source: str, rel: str, text: str) -> list[tuple[str, str, dict]]
     elif rel.lower().endswith(".md"):
         for c in split_markdown(text):
             heading = c["heading"] or rel
-            meta = {"source": source, "path": rel, "heading": heading, "lines": f"{c['start']}-{c['end']}"}
-            # TODO по вашей схеме (раздел 3): свои поля метаданных, например тип документа
-            # (adr / readme / contributing) или статус ADR. Значения — str, int, float или bool.
+            doc_type = "adr" if "adr" in rel.lower() else "doc"
+            meta = {
+                "source": source,
+                "origin": source,
+                "doc_type": doc_type,
+                "path": rel,
+                "heading": heading,
+                "lines": f"{c['start']}-{c['end']}",
+            }
             result.append((c["text"], f"{heading}\n{c['text']}", meta))
     return result
 

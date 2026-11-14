@@ -22,13 +22,13 @@ class AISettings(BaseSettings):
     llm_temperature: float = 0.1
     ai_repo_root: str | Path = "../app-conf-project-todo-list"
     ai_deny_globs: str = ".env*,*.pem,*.key,.git,secrets"
-    ai_exclude_dirs: str = ".git,.venv,venv,node_modules,__pycache__,dist,build,.pytest_cache,.ruff_cache,.chroma"
+    ai_exclude_dirs: str = "git,.venv,venv,node_modules,__pycache__,dist,build,.pytest_cache,.ruff_cache,.chroma,tests"
     ai_tool_timeout_s: int = 30
         # поиск по документации (практика 3)
-    ai_index_dir: str = ".chroma"  # каталог индекса ChromaDB от корня помощника; в .gitignore
+    ai_index_dir: str = "../.chroma"  # каталог индекса ChromaDB от корня помощника; в .gitignore
     ai_index_backend_globs: str = "README.md,CONTRIBUTING.md,docs/*.md,*.py"  # из *.py — только docstrings
     ai_index_assistant_globs: str = "README.md,docs/adr/*.md,docs/tools-spec-cycle2.md"
-    ai_embed_model: str = "qwen3-embedding:0.6b"  # одна модель для индекса и для запроса
+    ai_embed_model: str = "embeddinggemma"  # одна модель для индекса и для запроса
     ai_embed_query_prefix: str = ""  # префикс вопроса по карточке модели; пусто — без префикса
     ai_embed_doc_prefix: str = ""  # префикс чанка при индексации; пусто — без префикса
     ai_embed_timeout_s: int = 300  # ожидание ответа Ollama на одну порцию, секунды
