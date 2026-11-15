@@ -1,7 +1,8 @@
+from pathlib import Path
 from typing import Literal
+
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pathlib import Path
 
 
 class AISettings(BaseSettings):

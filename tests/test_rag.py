@@ -214,9 +214,11 @@ def test_team_secret_in_allowed_file(rs, assistant, client, backend):
         "# Настройка\n\n Пароль базы: POSTGRES_PASSWORD=team-secret-42\n", 
         encoding="utf-8"
     )
-    with mock.patch.object(rp, "_client", return_value=client):
-        with mock.patch.object(rp, "embed", fake_embed):
-            rp.build_index(rs, assistant_root=assistant, log=lambda *a: None)
+with (
+    mock.patch.object(rp, "_client", return_value=client),
+    mock.patch.object(rp, "embed", fake_embed),
+):
+    rp.build_index(rs, assistant_root=assistant, log=lambda *a: None)
     # Достаем все документы из базы знаний и проверяем, что секретного пароля там НЕТ
     documents = client.get_collection(rp.COLLECTION).get()["documents"]
     assert documents

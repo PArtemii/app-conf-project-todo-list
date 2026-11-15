@@ -1,10 +1,10 @@
-from crewai import Agent, Crew, Task
-from ai.llm_factory import get_llm
-from ai.tools.get_tasks_by_priority import get_tasks_by_priority
 import sys
+
+from crewai import Agent, Crew, Task
+
+from ai.llm_factory import get_llm
 from ai.tools.code_tools import crewai_tools
 from ai.tools.rag_pipeline import crewai_tools as docs_tools
-
 
 agent = Agent(
     role="Ассистент todo-листа",
