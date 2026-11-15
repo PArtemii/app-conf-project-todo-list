@@ -40,6 +40,8 @@ wheels/
 *.sqlite
 *.sqlite3
 
+.chroma/
+
 # Logs
 *.log
 logs/

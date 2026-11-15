@@ -1,7 +1,8 @@
+from pathlib import Path
 from typing import Literal
+
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pathlib import Path
 
 
 class AISettings(BaseSettings):
@@ -22,9 +23,18 @@ class AISettings(BaseSettings):
     llm_temperature: float = 0.1
     ai_repo_root: str | Path = "../app-conf-project-todo-list"
     ai_deny_globs: str = ".env*,*.pem,*.key,.git,secrets"
-    ai_exclude_dirs: str = ".git,.venv,venv,node_modules,__pycache__,dist,build"
+    ai_exclude_dirs: str = "git,.venv,venv,node_modules,__pycache__,dist,build,.pytest_cache,.ruff_cache,.chroma,tests"
     ai_tool_timeout_s: int = 30
-
+        # поиск по документации (практика 3)
+    ai_index_dir: str = "../.chroma"  # каталог индекса ChromaDB от корня помощника; в .gitignore
+    ai_index_backend_globs: str = "README.md,CONTRIBUTING.md,docs/*.md,*.py"  # из *.py — только docstrings
+    ai_index_assistant_globs: str = "README.md,docs/adr/*.md,docs/tools-spec-cycle2.md"
+    ai_embed_model: str = "embeddinggemma"  # одна модель для индекса и для запроса
+    ai_embed_query_prefix: str = ""  # префикс вопроса по карточке модели; пусто — без префикса
+    ai_embed_doc_prefix: str = ""  # префикс чанка при индексации; пусто — без префикса
+    ai_embed_timeout_s: int = 300  # ожидание ответа Ollama на одну порцию, секунды
+    ai_search_top_k: int = 3  # сколько фрагментов по умолчанию; потолок 5 — в коде
+    ai_search_max_distance: float = 2.0  # порог расстояния cosine; 2.0 — порога нет
 
 
 settings = AISettings()
