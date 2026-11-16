@@ -40,11 +40,11 @@ from ai.tools.rag_pipeline import crewai_tools as docs_tools
 # при этом теряется. Поэтому время на деле ограничивает max_iter, а это число —
 # порог «не уложились», после которого человек получает сообщение, а не результат.
 # Уточните замером запуска 1 (ADR 004).
-MAX_TASK_SECONDS = 900
+MAX_TASK_SECONDS = 1800
 
 # --- Промпты (TODO по вашей архитектуре: разделы 2 и 5 docs/crew-design.md) ---
 
-RESEARCHER_ROLE = "Исследователь кода бэкенда"
+RESEARCHER_ROLE = "Researcher"
 RESEARCHER_GOAL = "Найти обработчик эндпоинта из задачи и его ожидаемый ответ, с источником каждого факта"
 RESEARCHER_BACKSTORY = (
     "Ты изучаешь FastAPI-бэкенд команды и только читаешь его. Ожидаемое поведение "
@@ -73,7 +73,7 @@ RESEARCH_OUTPUT = (
     "ошибка инструмента (текст)."
 )
 
-CODER_ROLE = "Автор pytest-тестов"
+CODER_ROLE = "Coder"
 CODER_GOAL = "Записать в generated/ один pytest-тест по фактам Исследователя без замечаний линтера"
 CODER_BACKSTORY = (
     "Ты пишешь тест только по фактам из итога Исследователя и ничего не придумываешь. "
@@ -176,7 +176,7 @@ def build_crew(task_text: str) -> Crew:
     # agents.append(reviewer)
     # tasks.append(review)
 
-    return Crew(agents=agents, tasks=tasks, process=Process.sequential, verbose=True)
+    return Crew(agents=agents, tasks=tasks, process=Process.sequential, memory=False, verbose=True)
 
 
 def main(argv: list[str]) -> int:
