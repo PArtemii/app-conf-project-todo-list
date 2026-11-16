@@ -211,18 +211,18 @@ def test_team_secret_in_allowed_file(rs, assistant, client, backend):
     """Тест команды (Раздел 1): Проверка фильтрации секретов внутри текста."""
     # Создаем файл, который разрешен allow-list, но внутри него зашит пароль
     (backend / "docs" / "setup.md").write_text(
-        "# Настройка\n\n Пароль базы: POSTGRES_PASSWORD=team-secret-42\n", 
+        "# Настройка\n\n Пароль базы: POSTGRES_PASSWORD=team-secret-42\n",
         encoding="utf-8"
     )
-with (
-    mock.patch.object(rp, "_client", return_value=client),
-    mock.patch.object(rp, "embed", fake_embed),
-):
-    rp.build_index(rs, assistant_root=assistant, log=lambda *a: None)
-    # Достаем все документы из базы знаний и проверяем, что секретного пароля там НЕТ
-    documents = client.get_collection(rp.COLLECTION).get()["documents"]
-    assert documents
-    assert all("team-secret-42" not in doc for doc in documents)
+    with (
+        mock.patch.object(rp, "_client", return_value=client),
+        mock.patch.object(rp, "embed", fake_embed),
+    ):
+        rp.build_index(rs, assistant_root=assistant, log=lambda *a: None)
+        # Достаем все документы из базы знаний и проверяем, что секретного пароля там НЕТ
+        documents = client.get_collection(rp.COLLECTION).get()["documents"]
+        assert documents
+        assert all("team-secret-42" not in doc for doc in documents)
 
 def test_team_table_not_split():
     """Тест команды (Раздел 2): Таблицы эндпоинтов не режутся посередине."""
