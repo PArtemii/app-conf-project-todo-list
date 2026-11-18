@@ -270,7 +270,7 @@ def search_codebase(
     # - слишком общий запрос: total больше 500 -> ok, matches пустой,
     #   hint «запрос слишком общий: найдено N совпадений, уточни запрос»;
     # - файлы, которые ast не разобрал, -> "skipped": N в ответе.
-    
+
     # Защита от слишком общих поисковых запросов (требование вашей v2.1)
     if total > 500:
         return _ok(
@@ -283,7 +283,7 @@ def search_codebase(
             matches=[],
             hint="запрос слишком общий: найдено слишком много совпадений, уточни запрос"
         )
-    
+
     extra = {}
     if total == 0:  # без подсказки модель отвечает «такого нет», не проверив весь репозиторий
         if path_glob != "*.py" or path.strip() not in (".", ""):
@@ -361,8 +361,17 @@ def _ruff_bin() -> str | None:
 
 def run_linter(path: str, s: AISettings, max_findings: int = 30) -> str:
     """ruff check без исправлений и без кеша; коды 0 и 1 -> ok, 2 и выше -> error."""
+    from ai.tools.generated_files import (  # практика 4: второй корень generated/
+        check_generated_path,
+        generated_settings,
+        is_generated,
+    )
+
+    generated = is_generated(path)  # путь generated/... — корень помощника, а не бэкенда
+    if generated:
+        s = generated_settings(s)
     root = Path(s.ai_repo_root).resolve()
-    target, err = check_path(path, s)
+    target, err = check_generated_path(path, s) if generated else check_path(path, s)
     if err:
         return err
     max_findings, err = _as_int(max_findings, "max_findings", 30, 1, 100)
@@ -379,7 +388,7 @@ def run_linter(path: str, s: AISettings, max_findings: int = 30) -> str:
         )
     deny = _split(s.ai_deny_globs)
     cmd = [ruff, "check", "--output-format=json", "--no-fix", "--no-cache"]
-    cmd += _ruff_config_args(target, root)
+    cmd += ["--isolated"] if generated else _ruff_config_args(target, root)
     for glob in deny:
         cmd += ["--extend-exclude", glob]
     cmd += ["--", rel]
@@ -516,7 +525,8 @@ def crewai_tools(s: AISettings | None = None) -> list:
         status=error, результат проверки неизвестен: не сообщай, что замечаний нет.
 
         Args:
-            path: существующий файл или каталог относительно корня репозитория; "." — весь репозиторий.
+            path: существующий файл или каталог относительно корня репозитория; "." — весь репозиторий;
+                generated/test_<имя>.py — файл теста, записанный write_generated.
             max_findings: сколько замечаний вернуть, от 1 до 100.
 
         Returns:
