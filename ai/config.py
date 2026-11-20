@@ -22,6 +22,7 @@ class AISettings(BaseSettings):
     qwen_api_key: SecretStr | None = None
     llm_temperature: float = 0.1
     ai_repo_root: str | Path = "../app-conf-project-todo-list"
+    ai_backend_url: str = "http://127.0.0.1:8000"
     ai_deny_globs: str = ".env*,*.pem,*.key,.git,secrets"
     ai_exclude_dirs: str = "git,.venv,venv,node_modules,__pycache__,dist,build,.pytest_cache,.ruff_cache,.chroma,tests"
     ai_tool_timeout_s: int = 30
