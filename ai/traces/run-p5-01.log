@@ -1,0 +1,60 @@
++--------------------------+--------------------------[CrewAIEventsBus] Sync handler error in on_crew_started: 'charmap' codec can't
+encode character '\u2728' in position 1: character maps to <undefined>
++--------------------------[CrewAIEventsBus] Sync handler error in on_task_started: 'charmap' codec can't
+encode character '\u2728' in position 1: character maps to <undefined>
++--------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_started: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
++----------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
+[32mTool get_openapi_schema executed with result: {"status": "ok", "total_operations": 3, "returned": 3, "truncated": false, "operations": [{"method": "GET", "path": "/", "parameters": [], "request_body": null, "responses": ["200"]}, {"method": "GET"...[0m
++--------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
++----------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
+[32mTool search_codebase executed with result: {"status": "ok", "query": "version", "kind": "symbol", "total_matches": 1, "returned": 1, "truncated": false, "timed_out": false, "matches": [{"path": "main.py", "line": 63, "kind": "def"}]}...[0m+-
+-------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
++----------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
+[32mTool read_file executed with result: {"status": "ok", "path": "main.py", "start_line": 1, "end_line": 65, "total_lines": 65, "truncated": false, "content": "1: import logging\n2: \n3: from config import get_settings\n4: \n5: import psyco...[0m+-
+-------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
++----------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
+python : ERROR:crewai.flow.runtime:Error executing listener execute_native_tool: 'charmap' codec can't encode character '\u2011' in position 241: charac
+ter maps to <undefined>
+At line:1 char:1
++ python -u -m ai generate-tests "Нужен тест: GET /version отвечает 200 ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR:crewai.fl... to <undefined>:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
++--------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
+[91mAn unknown error occurred. Please check the details below.[0m
+[91mError details: 'charmap' codec can't encode character '\u2011' in position 241: character maps to <undefined>[0m
++----------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_started: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
++--------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
+[32mTool get_openapi_schema executed with result: {"status": "ok", "total_operations": 3, "returned": 3, "truncated": false, "operations": [{"method": "GET", "path": "/", "parameters": [], "request_body": null, "responses": ["200"]}, {"method": "GET"...[0m
++----------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
++--------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
+[32mTool search_codebase executed with result: {"status": "ok", "query": "version", "kind": "symbol", "total_matches": 1, "returned": 1, "truncated": false, "timed_out": false, "matches": [{"path": "main.py", "line": 63, "kind": "def"}]}...[0m+-
+---------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
++--------------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_started: 'charmap' codec
+can't encode character '\u2728' in position 1: character maps to <undefined>
+[32mTool read_file executed with result: {"status": "ok", "path": "main.py", "start_line": 1, "end_line": 65, "total_lines": 65, "truncated": false, "content": "1: import logging\n2: \n3: from config import get_settings\n4: \n5: import psyco...[0m
++----------------------[CrewAIEventsBus] Sync handler error in on_tool_usage_finished: 'charmap' codec
+can't encode character '\U0001f527' in position 1: character maps to
+<undefined>
